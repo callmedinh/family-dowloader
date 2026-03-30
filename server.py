@@ -23,7 +23,7 @@ def get_video():
 
     # Cấu hình yt-dlp tối ưu cho cả YouTube và TikTok
     ydl_opts = {
-        'format': 'best', 
+        'format': 'b[ext=mp4]/b/best',
         'quiet': True,
         'noplaylist': True,
         'no_warnings': True,
