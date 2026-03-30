@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trạm Tải Video</title>
+    <style>
+        :root { --bg: #f9f9fb; --surface: #ffffff; --text: #111827; --border: #e5e7eb; --primary: #000000; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: var(--surface); padding: 32px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); width: 100%; max-width: 400px; border: 1px solid var(--border); }
+        h2 { margin-top: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+        p { color: #6b7280; font-size: 14px; margin-bottom: 24px; }
+        input { width: 100%; padding: 12px 16px; margin-bottom: 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; box-sizing: border-box; outline: none; transition: border 0.2s; }
+        input:focus { border-color: var(--primary); }
+        button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
+        button:active { opacity: 0.8; }
+        .result { margin-top: 24px; display: none; padding: 16px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); word-break: break-word;}
+        .result a { display: inline-block; margin-top: 12px; color: white; background: #2563eb; padding: 10px 16px; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 500;}
+        .loading { display: none; font-size: 14px; color: #6b7280; margin-top: 16px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Tải Video</h2>
+        <p>Hỗ trợ YouTube & TikTok (Không logo)</p>
+        
+        <input type="text" id="urlInput" placeholder="Dán link video vào đây..." autocomplete="off">
+        <button onclick="fetchVideo()">Lấy Link Tải</button>
+
+        <div class="loading" id="loadingText">Đang xử lý, vui lòng đợi...</div>
+
+        <div class="result" id="resultBox">
+            <strong id="videoTitle" style="font-size: 14px;"></strong><br>
+            <a id="downloadBtn" href="#" target="_blank" download>Tải Video Về Máy</a>
+        </div>
+    </div>
+
+    <script>
+        const SECRET_KEY = "giadinh123"; // Trùng khớp với backend
+
+        async function fetchVideo() {
+            const url = document.getElementById("urlInput").value;
+            const resultBox = document.getElementById("resultBox");
+            const loadingText = document.getElementById("loadingText");
+            const titleEl = document.getElementById("videoTitle");
+            const downloadBtn = document.getElementById("downloadBtn");
+
+            if (!url) { alert("Vui lòng dán link!"); return; }
+
+            resultBox.style.display = "none";
+            loadingText.style.display = "block";
+
+            try {
+                const response = await fetch(`/api/download?key=${SECRET_KEY}&url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    alert("Lỗi: " + data.error);
+                } else {
+                    titleEl.innerText = data.title;
+                    downloadBtn.href = data.download_url;
+                    resultBox.style.display = "block";
+                }
+            } catch (err) {
+                alert("Không thể kết nối đến máy chủ.");
+            } finally {
+                loadingText.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
