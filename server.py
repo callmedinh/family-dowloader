@@ -36,16 +36,32 @@ def get_video():
             info = ydl.extract_info(url, download=False)
             
             download_url = info.get("url")
+            
+            # 🔥 BƯỚC LỌC THÔNG MINH: Ngăn chặn lỗi bốc nhầm file ảnh (.jpg, .webp, storyboard)
+            if download_url and (".jpg" in download_url or "storyboard" in download_url):
+                download_url = None # Hủy link ảnh lỗi
+                
+                # Tự tay lục lọi trong danh sách các định dạng của YouTube để tìm file MP4 chuẩn
+                if "formats" in info:
+                    # Lặp ngược từ dưới lên (vì yt-dlp thường để file xịn nhất ở cuối)
+                    for f in reversed(info["formats"]):
+                        # Điều kiện: Có video (vcodec), có âm thanh (acodec) và là đuôi mp4
+                        if f.get("vcodec") != "none" and f.get("acodec") != "none" and f.get("ext") == "mp4":
+                            download_url = f.get("url")
+                            break # Tìm thấy là dừng luôn
+
+            # Xử lý fallback cho các trang khác (TikTok)
             if not download_url and "entries" in info:
                 download_url = info["entries"][0].get("url")
 
             if not download_url:
-                return jsonify({"error": "Không thể lấy link tải trực tiếp."}), 500
+                return jsonify({"error": "Không thể lấy link video chuẩn. Vui lòng thử lại!"}), 500
 
             return jsonify({
                 "title": info.get("title", "Video"),
                 "download_url": download_url
             })
+
     except Exception as e:
         return jsonify({"error": f"Lỗi từ hệ thống: {str(e)}"}), 500
 
