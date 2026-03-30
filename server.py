@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 import yt_dlp
 from waitress import serve
+import os
 
 app = Flask(__name__)
 SECRET_KEY = "giadinh123"
@@ -47,5 +48,7 @@ def get_video():
         return jsonify({"error": "Lỗi xử lý link. Hãy kiểm tra lại."}), 500
 
 if __name__ == "__main__":
-    print("🚀 App đang chạy tại: http://0.0.0.0:5000")
-    serve(app, host='0.0.0.0', port=5000)
+    # Lấy Port do Render cấp, nếu chạy ở máy tính thì mặc định là 5000
+    port = int(os.environ.get("PORT", 5000)) 
+    print(f"🚀 App đang chạy tại: http://0.0.0.0:{port}")
+    serve(app, host='0.0.0.0', port=port)
