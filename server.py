@@ -26,7 +26,9 @@ def get_video():
         'format': 'best', 
         'quiet': True,
         'noplaylist': True,
-        'no_warnings': True
+        'no_warnings': True,
+        'extractor_args': {'youtube': ['client=android,ios,tv']}, # Cứ giữ lại dòng hôm trước cho chắc ăn
+        'cookiefile': 'cookies.txt'  # 🔥 THÊM DÒNG NÀY: Báo cho yt-dlp biết chỗ lấy thẻ căn cước
     }
 
     try:
