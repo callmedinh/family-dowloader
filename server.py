@@ -45,7 +45,7 @@ def get_video():
                 "download_url": download_url
             })
     except Exception as e:
-        return jsonify({"error": "Lỗi xử lý link. Hãy kiểm tra lại."}), 500
+        return jsonify({"error": f"Lỗi từ hệ thống: {str(e)}"}), 500
 
 if __name__ == "__main__":
     # Lấy Port do Render cấp, nếu chạy ở máy tính thì mặc định là 5000
